@@ -7,8 +7,22 @@ module DidYouMean
       OpenStruct.new config.merge custom
     end
 
-    def self.search
-      ::Tweetster::Searcher.results config.search_term
+    def self.search since: 0
+      results = ::Tweetster::Searcher.results config.search_term, since: since
+  #    require 'pry'
+  #    binding.pry
+      save results.first.id
+      results
+    end
+
+    def self.save id
+      File.open config.last_tweet_file, 'w' do |f|
+        f.write id
+      end
+    end
+
+    def self.last
+      File.read(config.last_tweet_file).to_i
     end
 
     def self.fetch_yaml path
